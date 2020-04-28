@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no, viewport-fit=cover">
+    <title>搜索</title>
+    <style type="text/css">
+        .doit {
+            display: inline-block;
+            background-color: #e57471;
+            color: white;
+            padding: 6px 20px;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        .pic {
+            float: left;
+            width: 100px;
+            margin: 10px;
+            text-decoration: none;
+            color: #333;
+            font-size: 12px;
+        }
+        .pic img {
+            width: 100%;
+        }
+    </style>
+</head>
+<body style="padding: 0;margin: 0;">
+
+<div style="text-align: center;padding-top: 20px;">
+    <h3 style="color: #333; font-size: 14px;">漫客山谷会努力坚持，谢谢大家的支持</h3>
+    <input id="info" placeholder="搜索你要看的吧" style="width: 250px; border: 1px solid #aaa; height: 30px; line-height: 30px; padding-left: 10px; font-size: 13px; border-radius: 4px;" />
+    <div class="doit" id="doit">搜索</div>
+</div>
+
+<div id="list" style="
+    flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+    text-align: center;
+">
+</div>
+
+<script type="text/javascript" src="https://wq.360buyimg.com/js/common/dest/wg.zepto.min.js"></script>
+
+<script type="text/javascript">
+// 如果不是https，就不行
+if (location.protocol == "http:") {
+    // 要跳转
+    location.replace(location.href.replace(/^https?:/, "https:"));
+}
+
+function $getQuery(name,url){  
+//参数：变量名，url为空则表从当前页面的url中取  
+    var u  = arguments[1] || window.location.search,  
+        reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"),  
+        r = u.substr(u.indexOf("\?")+1).match(reg);  
+    return r!=null?r[2]:"";  
+} 
+function $shuffle(arr) {  
+    var array = arr.concat();  
+    for(var j, x, i = array.length; i; j = parseInt(Math.random() * i), x = array[--i], array[i] = array[j], array[j] = x);   
+    return array;  
+}  
+
+dorenader("我的");
+
+function dorenader (value) {
+    $.ajax({
+        url: "https://onhit.cn/sanpk/comic-search?comic=" + encodeURIComponent(value),
+        dataType: "jsonp",
+        success: function (data) {
+            console.log(data);
+            if (data.ret == 0) {
+                $("#list").html((function () {
+                    var _str = "";
+                    var _data = $shuffle(data.data);
+                    _data.forEach(function (ceil) {
+                        _str += "<a class=\"pic\" href=\"comicindex_0.html?comic=" + ceil.name + "\">\
+                            <img init_src=\"" + ceil.pic.replace(/^https?/, "http") + "\"/>\
+                            <div>" + ceil.zname + "</div>\
+                        </a>";
+                    });
+                    return _str;
+                })());
+
+                autoLoadImage();
+            } else {
+                alert("查询错误");
+            }
+        }
+    });
+}
+
+$("#doit").click(function () {
+    dorenader($("#info").val());
+});
+
+
+function autoLoadImage(option) {  
+    var opt = {  
+        scrollOffsetH : 100,  //加载偏移量  
+        initSrcName : 'init_src',    //加载属性名  
+        container:document.body,//滚动加载的容器（id或者dom）  
+        fadeIn:false,//是否渐显(针对图片的过渡渐显动画，图片的默认css属性为opacity:0;transition:opacity 0.3 linear,找构建同学实现)  
+        zoom:1,//页面的缩放比  
+        skip_invisible : false   //过滤隐藏的图片，默认不过滤隐藏图片  
+    };  
+    if(option){  
+        for(var key in option){  
+            opt[key] = option[key];  
+        }  
+    }  
+    function init() {  
+        var cont=typeof opt.container=="string"?$("#"+opt.container):$(opt.container);  
+        var objImages=$("img["+opt.initSrcName+"]",cont);  
+        objImages.each(function (i) {  
+            var dom = $(this);  
+            images_data.cache.push({  
+                url:dom.attr(opt.initSrcName),  
+                obj:dom,  
+                top:(opt.skip_invisible && isElementHidden(dom) ? Infinity : dom[0].getBoundingClientRect().top) * opt.zoom + window.pageYOffset    //是否要跳过隐藏的图片  
+            });  
+        });  
+        images_data.num = images_data.cache.length;  
+    }  
+    var images_data = {  
+        // 当前可视区域的高度  
+        viewHeight:$(window).height(),  
+        // 定时器  
+        ptr:"",  
+        // 所有图片  
+        cache:[],  
+        // 图片数量  
+        num:0  
+    };  
+    init();  
+    if (images_data.ptr) {  
+        clearInterval(images_data.ptr);  
+    }  
+    images_data.ptr = setInterval(doScroll, 100);  
+    function doScroll() {  
+        // 滚动条的高度  
+        var scrollHeight = window.pageYOffset,  
+        // 已经卷起的高度+可视区域高度，即当前显示的元素的高度  
+            visibleHeight = images_data.viewHeight + opt.scrollOffsetH + scrollHeight;  
+        $.each(images_data.cache, function (i, data) {  
+            var element = data.obj, loaded = element.attr("loaded");  
+            // 图片在后面两屏范围内，并且未被加载过  
+            if (visibleHeight > data.top && !loaded) {  
+                // 加载图片  
+                element.attr("src", data.url);  
+                element.removeAttr(opt.initSrcName);  
+                element.attr("loaded", images_data.num);  
+                opt.fadeIn&&element.css("opacity", "1");  
+                images_data.num--;  
+            }  
+        });  
+        // 没有图片加载，清除定时器  
+        if (images_data.num == 0) {  
+            clearInterval(images_data.ptr);  
+            images_data.ptr = null;  
+        }  
+        //回调方法，比如利用这个来判断是否需要翻页  
+        opt.callback && opt.callback();  
+    }  
+    }  
+
+    //判断当前节点是否是隐藏的  
+    function isElementHidden(ele){  
+    var _relate = $(ele).parents().concat();  
+    _relate.unshift($(ele)[0]);  
+    return _relate.some(function(e){  
+        if(getComputedStyle(e, '').getPropertyValue("display") == "none"){  
+            //元素隐藏了  
+            return true;  
+        }  
+    });  
+}
+</script>
+</body>
+</html>

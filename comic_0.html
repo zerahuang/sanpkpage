@@ -7,157 +7,20 @@
         .main img{
             width: 100%;
             min-height: 100px;
-            margin-top: -5px;
         }
         .fixlink {
             margin: 0 15px;
         }
     </style>
 </head>
-<body style="padding: 0;margin: 0;">
-<div class="main" id="main">
-</div>
+<body style="padding: 0;margin: 0;text-align: center;">
+    <div style="font-size: 13px; color: #aaa; margin-top: 50px;">谢谢你一如既往地支持漫客山谷</div>
+    <div style="font-size: 13px; color: #aaa; margin-top: 10px;">漫客山谷目前已经恢复</div>
+    <div style="font-size: 13px; color: #666; margin-top: 10px; font-weight: bold;">您可以直接从“漫客山谷”公众号的“底部菜单”进入小程序</div>
+    <div style="font-size: 13px; color: #aaa; margin-top: 10px;">为了守护我们共同的净土</div>
+    <div style="font-size: 13px; color: #aaa; margin-top: 10px;">我们不是一个人在战斗</div>
 
-<div style="position: fixed; bottom: 0; height: 40px; width: 100%; background-color: rgba(0,0,0,0.8); color: #ccc;    display: flex;
-    align-items: center;
-    justify-content: center;">
-    <div class="fixlink" onclick="location.href = 'comicindex_0.html?comic=' + $getQuery('comic')">回章节页</div>
-    <div class="fixlink" onclick="location.href = 'search_0.html'">搜索</div>
-    <div class="fixlink" onclick="location.href = 'comic_0.html?comic=' + $getQuery('comic') + '&cindex=' + (+$getQuery('cindex') - 1)" id="prev">上一章</div>
-    <div class="fixlink" onclick="location.href = 'comic_0.html?comic=' + $getQuery('comic') + '&cindex=' + (+$getQuery('cindex') + 1)" id="next">下一章</div>
-</div>
-
-<script type="text/javascript" src="https://wq.360buyimg.com/js/common/dest/wg.zepto.min.js"></script>
-
-<script type="text/javascript">
-// 如果不是https，就不行
-if (location.protocol == "http:") {
-    // 要跳转
-    location.replace(location.href.replace(/^https?:/, "https:"));
-}
-
-function $getQuery(name,url){  
-//参数：变量名，url为空则表从当前页面的url中取  
-    var u  = arguments[1] || window.location.search,  
-        reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"),  
-        r = u.substr(u.indexOf("\?")+1).match(reg);  
-    return r!=null?r[2]:"";  
-} 
-
-// 获得章节信息
-$.ajax({
-    url: "https://onhit.cn/sanpk/page-getcharsinfo?comic=" + $getQuery("comic") + "&comic_index=" + $getQuery("cindex"),
-    dataType: "jsonp",
-    success: function (data) {
-        console.log(data);
-        if (data.ret == 0) {
-            $("#main").html((function () {
-                var _str = "";
-                data.data.charainfo.urls.forEach(function (ceil) {
-                    _str += "<img init_src='" + ceil.replace(/^https?/, "http") + "'/>";
-                });
-                return _str;
-            })());
-
-            // 判断消失
-            if (data.data.charactor_counts == $getQuery("cindex")) {
-                // 隐藏下一章
-                $("#next").hide();
-            }
-            if ($getQuery("cindex") == 1) {
-                // 隐藏下一章
-                $("#prev").hide();
-            }
-
-            document.title = data.data.charainfo.name;
-
-            autoLoadImage();
-        } else {
-            alert("查询错误");
-        }
-    }
-});
-
-function autoLoadImage(option) {  
-    var opt = {  
-        scrollOffsetH : 100,  //加载偏移量  
-        initSrcName : 'init_src',    //加载属性名  
-        container:document.body,//滚动加载的容器（id或者dom）  
-        fadeIn:false,//是否渐显(针对图片的过渡渐显动画，图片的默认css属性为opacity:0;transition:opacity 0.3 linear,找构建同学实现)  
-        zoom:1,//页面的缩放比  
-        skip_invisible : false   //过滤隐藏的图片，默认不过滤隐藏图片  
-    };  
-    if(option){  
-        for(var key in option){  
-            opt[key] = option[key];  
-        }  
-    }  
-    function init() {  
-        var cont=typeof opt.container=="string"?$("#"+opt.container):$(opt.container);  
-        var objImages=$("img["+opt.initSrcName+"]",cont);  
-        objImages.each(function (i) {  
-            var dom = $(this);  
-            images_data.cache.push({  
-                url:dom.attr(opt.initSrcName),  
-                obj:dom,  
-                top:(opt.skip_invisible && isElementHidden(dom) ? Infinity : dom[0].getBoundingClientRect().top) * opt.zoom + window.pageYOffset    //是否要跳过隐藏的图片  
-            });  
-        });  
-        images_data.num = images_data.cache.length;  
-    }  
-    var images_data = {  
-        // 当前可视区域的高度  
-        viewHeight:$(window).height(),  
-        // 定时器  
-        ptr:"",  
-        // 所有图片  
-        cache:[],  
-        // 图片数量  
-        num:0  
-    };  
-    init();  
-    if (images_data.ptr) {  
-        clearInterval(images_data.ptr);  
-    }  
-    images_data.ptr = setInterval(doScroll, 100);  
-    function doScroll() {  
-        // 滚动条的高度  
-        var scrollHeight = window.pageYOffset,  
-        // 已经卷起的高度+可视区域高度，即当前显示的元素的高度  
-            visibleHeight = images_data.viewHeight + opt.scrollOffsetH + scrollHeight;  
-        $.each(images_data.cache, function (i, data) {  
-            var element = data.obj, loaded = element.attr("loaded");  
-            // 图片在后面两屏范围内，并且未被加载过  
-            if (visibleHeight > data.top && !loaded) {  
-                // 加载图片  
-                element.attr("src", data.url);  
-                element.removeAttr(opt.initSrcName);  
-                element.attr("loaded", images_data.num);  
-                opt.fadeIn&&element.css("opacity", "1");  
-                images_data.num--;  
-            }  
-        });  
-        // 没有图片加载，清除定时器  
-        if (images_data.num == 0) {  
-            clearInterval(images_data.ptr);  
-            images_data.ptr = null;  
-        }  
-        //回调方法，比如利用这个来判断是否需要翻页  
-        opt.callback && opt.callback();  
-    }  
-    }  
-
-    //判断当前节点是否是隐藏的  
-    function isElementHidden(ele){  
-    var _relate = $(ele).parents().concat();  
-    _relate.unshift($(ele)[0]);  
-    return _relate.some(function(e){  
-        if(getComputedStyle(e, '').getPropertyValue("display") == "none"){  
-            //元素隐藏了  
-            return true;  
-        }  
-    });  
-}  
-</script>
+    <img src="https://img30.360buyimg.com/jdphoto/jfs/t1/111800/26/3207/47818/5ea67ccaE49cb1706/9aa47d6e56c94656.jpg" style="width: 250px;
+    margin-top: 20px;box-shadow: 0px 0px 10px rgba(0,0,0" />
 </body>
 </html>

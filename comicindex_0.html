@@ -4,91 +4,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no, viewport-fit=cover">
     <title></title>
     <style type="text/css">
-        .ceil {
-            float: left;
-            width: 50%;
+        .main img{
+            width: 100%;
+            min-height: 100px;
         }
-        .ceil a {
-            display: block;
-            margin: 5px;
-            text-align: center;
-            border: 1px solid #aaa;
-            border-radius: 2px;
-            font-size: 12px;
-            color: #333;
-            height: 28px;
-            line-height: 28px;
-            overflow: hidden;
-            padding: 0 3px;
-            text-decoration: none;
-            /*background-color: #E57471;*/
-            /*color: white;*/
+        .fixlink {
+            margin: 0 15px;
         }
     </style>
 </head>
-<body style="padding: 0;margin: 0;">
-<div style="display: flex;
-    align-items: center;
-    justify-content: center; padding: 10px;background-color: #efefef;">
-    <img id="cover" style="width: 25%; float: left;" />
-    <div style="width: 70%;
-    float: right; margin-left: 10px; font-size: 12px;">
-        <div style="font-weight: bold;font-size: 20px; margin-bottom: 10px;" id="cname"></div>
-        <div style=" margin-bottom: 10px;"><span id="author"></span><span style="margin-left: 20px;" id="cates"></span></div>
-        <div id="desc"></div>
-    </div>
-</div>
+<body style="padding: 0;margin: 0;text-align: center;">
+    <div style="font-size: 13px; color: #aaa; margin-top: 50px;">谢谢你一如既往地支持漫客山谷</div>
+    <div style="font-size: 13px; color: #aaa; margin-top: 10px;">漫客山谷目前已经恢复</div>
+    <div style="font-size: 13px; color: #666; margin-top: 10px; font-weight: bold;">您可以直接从“漫客山谷”公众号的“底部菜单”进入小程序</div>
+    <div style="font-size: 13px; color: #aaa; margin-top: 10px;">为了守护我们共同的净土</div>
+    <div style="font-size: 13px; color: #aaa; margin-top: 10px;">我们不是一个人在战斗</div>
 
-<div style="border-top: 1px solid #ddd; padding-top: 10px;" id="contentlist">
-</div>
-
-
-<script type="text/javascript" src="https://wq.360buyimg.com/js/common/dest/wg.zepto.min.js"></script>
-
-<script type="text/javascript">
-// 如果不是https，就不行
-if (location.protocol == "http:") {
-    // 要跳转
-    location.replace(location.href.replace(/^https?:/, "https:"));
-}
-    
-function $getQuery(name,url){  
-//参数：变量名，url为空则表从当前页面的url中取  
-    var u  = arguments[1] || window.location.search,  
-        reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"),  
-        r = u.substr(u.indexOf("\?")+1).match(reg);  
-    return r!=null?r[2]:"";  
-} 
-
-// 获得章节信息
-$.ajax({
-    url: "https://onhit.cn/sanpk/page-getcomic?comic=" + $getQuery("comic"),
-    dataType: "jsonp",
-    success: function (data) {
-        console.log(data);
-        if (data.ret == 0) {
-            document.title = data.data.z_ch_name;
-            $("#cover").attr("src", data.data.indexpic.replace(/^https?/, "http"));
-            $("#cname").html(data.data.z_ch_name);
-            $("#author").html(data.data.author);
-            $("#cates").html((function () {
-                return data.data.charactors.join("，");
-            })());
-            $("#desc").html(data.data.descs);
-            $("#contentlist").html((function () {
-                var _str = "";
-                data.data.charas.forEach(function (ceil) {
-                    _str += "<div class=\"ceil\">\
-                        <a href='comic_0.html?comic=" + $getQuery("comic") + "&cindex=" + ceil.comic_index + "'>" + ceil.name + "</a>\
-                    </div>";
-                });
-                return _str;
-            })());
-        } else {
-            alert("查询错误");
-        }
-    }
-});
-</script>
+    <img src="https://img30.360buyimg.com/jdphoto/jfs/t1/111800/26/3207/47818/5ea67ccaE49cb1706/9aa47d6e56c94656.jpg" style="width: 250px;
+    margin-top: 20px;box-shadow: 0px 0px 10px rgba(0,0,0" />
 </body>
 </html>
